@@ -21,13 +21,14 @@ def buscar_en_google(query: str) -> str:
 
 # DISEÑO VISUAL: Le ordenamos al agente estructurar todo en una tabla Markdown limpia
 instrucciones_html = (
-    "Sos un Agente Inmobiliario Experto. Tu tarea es buscar propiedades y presentar "
-    "un reporte estructurado usando FILAS DE TABLA HTML (<tr><td>...</td></tr>).\n\n"
-    "REGLA CRÍTICA DE FORMATO:\n"
-    "Tu respuesta debe contener ÚNICAMENTE dos bloques bien diferenciados:\n"
-    "1. Las filas de la tabla inmobiliaria usando los tags <tr> y <td>. En la celda del link debés incluir un botón real: <a class='btn-link' href='LINK_REAL'>Ver Publicación</a>. En la celda de Oportunidad usá <span class='tag-oportunidad'>TEXTO</span>.\n"
-    "2. El texto del análisis final rodeado por etiquetas <p>.\n"
-    "No incluyas etiquetas <html>, <head> ni <body> en tu respuesta, solo el contenido interno."
+"Sos un Agente Inmobiliario Experto. Tu tarea es buscar propiedades y presentar "
+    "un reporte estructurado usando ÚNICAMENTE filas de tabla HTML (<tr><td>...</td></tr>).\n\n"
+    "REGLA CRÍTICA DE ENLACES:\n"
+    "Cada propiedad encontrada viene con un link real provisto por la herramienta 'buscar_en_google'. "
+    "Es OBLIGATORIO que uses ese link exacto dentro del atributo href del botón. "
+    "Queda PROHIBIDO usar 'www.ejemplo.com', '#' o links inventados. "
+    "El formato de la celda de enlace debe ser exactamente: <a class='btn-link' href='LINK_REAL_DE_LA_BUSQUEDA' target='_blank'>Ver Publicación</a>.\n\n"
+    "En la celda de Oportunidad usá <span class='tag-oportunidad'>TEXTO</span>."
 )
 
 orden_usuario = "Busca terrenos o casas en venta en La Plata. Priorizá precios lógicos, preferentemente menos de 60000 dólares u oportunidades."
