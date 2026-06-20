@@ -3,10 +3,7 @@ import requests
 from google import genai
 
 # 1. CONFIGURACIÓN DE TUS LLAVES (Poné tus API Keys acá)
-# Recordá conseguir la de Serper en serper.dev y la de Gemini en Google AI Studio
-OS_SERPER_KEY = "99dab18a3898bd5124b0f57a08a5fa98afa1bf93"
-os.environ["GEMINI_API_KEY"] = "AQ.Ab8RN6KDfnmFyqeIgbKHC3mYw1VPMBg4GGQdqSjE734obEE2gw"
-
+OS_SERPER_KEY = os.environ.get("SERPER_API_KEY")
 # 2. HERRAMIENTA DE BÚSQUEDA
 def buscar_en_google(query: str) -> str:
     url = "https://google.serper.dev/search"
@@ -123,7 +120,7 @@ plantilla_html = f"""<!DOCTYPE html>
 """
 
 # 3. GUARDAR EL ARCHIVO HTML
-nombre_archivo = "reporte_la_plata.html"
+nombre_archivo = "index.html"
 with open(nombre_archivo, "w", encoding="utf-8") as f:
     f.write(plantilla_html)
 
