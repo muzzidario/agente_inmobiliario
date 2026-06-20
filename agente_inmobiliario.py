@@ -2,8 +2,7 @@ import os
 import requests
 from google import genai
 
-# 1. CONFIGURACIÓN DE TUS LLAVES (Poné tus API Keys acá)
-OS_SERPER_KEY = os.environ.get("SERPER_API_KEY")
+client = genai.Client()
 # 2. HERRAMIENTA DE BÚSQUEDA
 def buscar_en_google(query: str) -> str:
     url = "https://google.serper.dev/search"
