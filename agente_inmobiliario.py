@@ -2,7 +2,9 @@ import os
 import requests
 from google import genai
 
-client = genai.Client()
+# Leemos la clave del entorno del servidor e inicializamos el cliente pasándosela directamente
+api_key_gemini = os.environ.get("GEMINI_API_KEY")
+client = genai.Client(api_key=api_key_gemini) # <--- Ahora le pasamos la clave de forma explícita
 # 2. HERRAMIENTA DE BÚSQUEDA
 def buscar_en_google(query: str) -> str:
     url = "https://google.serper.dev/search"
@@ -16,8 +18,6 @@ def buscar_en_google(query: str) -> str:
         lineas.append(f"Título: {r.get('title')}\nLink: {r.get('link')}\nDescripción: {r.get('snippet')}\n---")
     return "\n".join(lineas)
 
-# 3. INICIALIZAMOS EL AGENTE
-client = genai.Client()
 
 # DISEÑO VISUAL: Le ordenamos al agente estructurar todo en una tabla Markdown limpia
 instrucciones_html = (
