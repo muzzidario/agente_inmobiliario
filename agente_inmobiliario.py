@@ -9,7 +9,7 @@ client = genai.Client(api_key=api_key_gemini) # <--- Ahora le pasamos la clave d
 def buscar_en_google(query: str) -> str:
     url = "https://google.serper.dev/search"
     payload = {"q": query, "gl": "ar", "hl": "es"}
-    headers = {'X-API-KEY': OS_SERPER_KEY, 'Content-Type': 'application/json'}
+    headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
     response = requests.post(url, json=payload, headers=headers)
     
     resultados = response.json().get('organic', [])
