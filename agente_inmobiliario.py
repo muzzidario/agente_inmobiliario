@@ -1,7 +1,11 @@
 import os
 import requests
+from dotenv import load_dotenv
 from google import genai
 from google.genai import errors
+
+# Cargar variables desde un archivo .env en desarrollo/local
+load_dotenv()
 
 # Leemos la clave del entorno del servidor e inicializamos el cliente pasándosela directamente
 api_key_gemini = os.environ.get("GEMINI_API_KEY")
@@ -24,22 +28,24 @@ def buscar_en_google(query: str) -> str:
 
 # DISEÑO VISUAL: Le ordenamos al agente estructurar todo en una tabla Markdown limpia
 instrucciones_html = (
-    "Sos un Analista de Inversiones Inmobiliarias experto en el mercado de La Plata.\n\n"
-    "Tu objetivo NO es listar todas las propiedades que encontrás, sino actuar como un filtro estricto. "
-    "De las cientos de opciones que te provee la herramienta 'buscar_en_google', debés SELECCIONAR "
-    "ÚNICAMENTE un máximo de 5 a 7 propiedades que califiquen como verdaderas OPORTUNIDADES.\n\n"
-    "CRITERIOS DE SELECCIÓN:\n"
-    "1. Relación precio/M2 o precio total notablemente bajo para la zona.\n"
-    "2. Urgencias de venta, herencias o necesidad de efectivo (detectalo por palabras clave en los títulos).\n"
-    "3. Potencial de refacción o loteo atractivo.\n\n"
-    "FORMATO DE SALIDA:\n"
-    "Devolvé ÚNICAMENTE las filas HTML (<tr><td>...) de las propiedades seleccionadas. "
-    "En la celda de 'Destacado / Oportunidad', justificá en una frase corta POR QUÉ considerás que es una oportunidad "
-    "(ej: 'Un 20% abajo del valor promedio de la zona' o 'Ideal inversores por ubicación').\n"
-    "Obligatorio usar el link real de la búsqueda en el tag: <a class='btn-link' href='LINK_REAL' target='_blank'>Ver Publicación</a>."
+    "Sos un Analista Inmobiliario experto en La Plata.\n\n"
+    "Tu objetivo es armar una tabla HTML (<tr>) con un máximo de 5 propiedades individuales "
+    "que funcionen como oportunidades (idealmente abajo de U$S 60.000, urgencias, o a refaccionar).\n\n"
+    "REGLA DE ENLACES (ACTUALIZADA):\n"
+    "Sabemos que la herramienta 'buscar_en_google' suele devolver links a listados de grandes portales "
+    "(Zonaprop, MercadoLibre, Argenprop, Remax, etc.). EN LUGAR DE RECHAZARLOS, hacé lo siguiente:\n"
+    "1. Leé los fragmentos de texto (snippets) que acompañan a esos links en la búsqueda.\n"
+    "2. Si el fragmento describe una casa o terreno específico con su precio (ej: 'Casa en Los Hornos U$S 45.000...'), "
+    "TOMÁ ese resultado como válido.\n"
+    "3. Usá el link que te provee la herramienta (aunque sea el del listado filtrado del portal) para la celda de enlace. "
+    "Es preferible que el usuario llegue al listado filtrado de esa zona antes que dejar la tabla vacía.\n\n"
+    "FORMATO DE CELDAS:\n"
+    "- Celda 1 (Título): Descripción de la casa/lote del fragmento (ej: 'Casa a refaccionar en Los Hornos').\n"
+    "- Celda 2 (Ubicación/Precio): Zona y precio estimado/exacto según el texto leído.\n"
+    "- Celda 3 (Justificación): Por qué destaca (ej: 'Excelente precio para la zona, ideal inversión').\n"
+    "- Celda 4 (Link): <a class='btn-link' href='LINK_PROVISTO' target='_blank'>Ver Zona/Publicación</a>."
 )
 
-orden_usuario = "Busca terrenos o casas en venta en La Plata. Priorizá precios lógicos, preferentemente menos de 60000 dólares u oportunidades."
 orden_usuario = (
     "Realizá múltiples búsquedas en La Plata usando términos como: "
     "'remate dueño directo casas en venta La Plata', 'oportunidad urgente departamento La Plata', "
@@ -54,7 +60,7 @@ print("🤖 El agente está analizando el mercado y armando el reporte visual...
 try:
 
     response = client.models.generate_content(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         contents=orden_usuario,
         config={
             "system_instruction": instrucciones_html,
@@ -72,7 +78,7 @@ except errors.ClientError as e:
 
 # 2. PLANTILLA HTML CON ESTILOS PROFESIONALES
 # Aquí definimos el diseño visual (colores, fuentes, bordes)
-plantilla_html = """<!DOCTYPE html>
+plantilla_html = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">

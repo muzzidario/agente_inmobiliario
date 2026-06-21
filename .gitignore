@@ -1,2 +1,15 @@
-api-keys.txt
+#.env file with local secret keys
+.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# IDE/editor folders
+.vscode/api-keys.txt
 hola_mundo.py
