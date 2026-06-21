@@ -50,7 +50,7 @@ orden_usuario = (
 print("🤖 El agente está analizando el mercado y armando el reporte visual...")
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-1.5-flash',
     contents=orden_usuario,
     config={
         "system_instruction": instrucciones_html,
