@@ -1,10 +1,12 @@
 import os
 import requests
 from google import genai
+from google.genai import errors
 
 # Leemos la clave del entorno del servidor e inicializamos el cliente pasándosela directamente
 api_key_gemini = os.environ.get("GEMINI_API_KEY")
 serper_api_key = os.environ.get("SERPER_API_KEY")
+
 client = genai.Client(api_key=api_key_gemini) # <--- Ahora le pasamos la clave de forma explícita
 # 2. HERRAMIENTA DE BÚSQUEDA
 def buscar_en_google(query: str) -> str:
@@ -49,18 +51,28 @@ orden_usuario = (
 
 print("🤖 El agente está analizando el mercado y armando el reporte visual...")
 
-response = client.models.generate_content(
-    model='gemini-2.0-flash',
-    contents=orden_usuario,
-    config={
-        "system_instruction": instrucciones_html,
-        "tools": [buscar_en_google]
-    }
-)
+try:
+
+    response = client.models.generate_content(
+        model='gemini-2.0-flash',
+        contents=orden_usuario,
+        config={
+            "system_instruction": instrucciones_html,
+            "tools": [buscar_en_google]
+        }
+    )
+except errors.ClientError as e:
+    plantilla_html = (
+            "<tr><td colspan='4' style='text-align: center; padding: 30px; color: #721c24; background-color: #f8d7da; font-weight: bold;'>"
+            "🛑 LÍMITE DE CUOTA ALCANZADO: El agente inmobiliario no pudo consultar a Gemini porque se agotaron los créditos gratuitos "
+            "diarios. El reporte se actualizará automáticamente mañana a las 08:00 AM."
+            "</td></tr>"
+        )
+    
 
 # 2. PLANTILLA HTML CON ESTILOS PROFESIONALES
 # Aquí definimos el diseño visual (colores, fuentes, bordes)
-plantilla_html = f"""<!DOCTYPE html>
+plantilla_html = """<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
