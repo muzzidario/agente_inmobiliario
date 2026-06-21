@@ -67,8 +67,10 @@ try:
             "tools": [buscar_en_google]
         }
     )
+    filas_html = response.text
+
 except errors.ClientError as e:
-    plantilla_html = (
+    filas_html = (
             "<tr><td colspan='4' style='text-align: center; padding: 30px; color: #721c24; background-color: #f8d7da; font-weight: bold;'>"
             "🛑 LÍMITE DE CUOTA ALCANZADO: El agente inmobiliario no pudo consultar a Gemini porque se agotaron los créditos gratuitos "
             "diarios. El reporte se actualizará automáticamente mañana a las 08:00 AM."
@@ -143,7 +145,7 @@ plantilla_html = f"""<!DOCTYPE html>
             </tr>
         </thead>
         <tbody>
-            {response.text}
+            {filas_html}
         </tbody>
     </table>
 
