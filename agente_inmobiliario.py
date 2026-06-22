@@ -3,6 +3,7 @@ import requests
 from dotenv import load_dotenv
 from google import genai
 from google.genai import errors
+import traceback
 
 # Cargar variables desde un archivo .env en desarrollo/local
 load_dotenv()
@@ -31,14 +32,13 @@ instrucciones_html = (
     "Sos un Analista Inmobiliario experto en La Plata.\n\n"
     "Tu objetivo es armar una tabla HTML (<tr>) con un máximo de 5 propiedades individuales "
     "que funcionen como oportunidades (idealmente abajo de U$S 60.000, urgencias, o a refaccionar).\n\n"
-    "REGLA DE ENLACES (ACTUALIZADA):\n"
+    "REGLA DE ENLACES:\n"
     "Sabemos que la herramienta 'buscar_en_google' suele devolver links a listados de grandes portales "
     "(Zonaprop, MercadoLibre, Argenprop, Remax, etc.). EN LUGAR DE RECHAZARLOS, hacé lo siguiente:\n"
     "1. Leé los fragmentos de texto (snippets) que acompañan a esos links en la búsqueda.\n"
     "2. Si el fragmento describe una casa o terreno específico con su precio (ej: 'Casa en Los Hornos U$S 45.000...'), "
     "TOMÁ ese resultado como válido.\n"
     "3. Usá el link que te provee la herramienta (aunque sea el del listado filtrado del portal) para la celda de enlace. "
-    "Es preferible que el usuario llegue al listado filtrado de esa zona antes que dejar la tabla vacía.\n\n"
     "FORMATO DE CELDAS:\n"
     "- Celda 1 (Título): Descripción de la casa/lote del fragmento (ej: 'Casa a refaccionar en Los Hornos').\n"
     "- Celda 2 (Ubicación/Precio): Zona y precio estimado/exacto según el texto leído.\n"
@@ -58,7 +58,7 @@ orden_usuario = (
 print("🤖 El agente está analizando el mercado y armando el reporte visual...")
 
 try:
-
+    print ("llego acá 1")
     response = client.models.generate_content(
         model='gemini-2.5-flash',
         contents=orden_usuario,
@@ -67,15 +67,22 @@ try:
             "tools": [buscar_en_google]
         }
     )
+    print ("llego acá 2")
     filas_html = response.text
 
-except errors.ClientError as e:
+except Exception as e:
+    traceback.print_exc()
+    filas_html = "<tr><td colspan='4'>ERROR: " + str(e) + "</td></tr>"
+
+'''except errors.ClientError as e:
+
     filas_html = (
             "<tr><td colspan='4' style='text-align: center; padding: 30px; color: #721c24; background-color: #f8d7da; font-weight: bold;'>"
             "🛑 LÍMITE DE CUOTA ALCANZADO: El agente inmobiliario no pudo consultar a Gemini porque se agotaron los créditos gratuitos "
             "diarios. El reporte se actualizará automáticamente mañana a las 08:00 AM."
             "</td></tr>"
-        )
+        )'''
+
     
 
 # 2. PLANTILLA HTML CON ESTILOS PROFESIONALES
